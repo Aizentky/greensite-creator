@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Section } from "@/components/sevware/Section";
+import type React from "react";
 
 export const Route = createFileRoute("/installation")({
   head: () => ({
