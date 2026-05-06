@@ -3,10 +3,8 @@ import { Link } from "@tanstack/react-router";
 const navItems = [
   { label: "Home", to: "/" as const },
   { label: "Features", to: "/features" as const },
-  { label: "Launchers", to: "/launchers" as const },
-  { label: "Community", to: "/community" as const },
-  { label: "Download", to: "/download" as const },
-  { label: "Admin", to: "/admin" as const },
+  { label: "Installation", to: "/installation" as const },
+  { label: "Login", to: "/login" as const },
 ];
 
 export function Header() {
@@ -27,6 +25,15 @@ export function Header() {
               {n.label}
             </Link>
           ))}
+          <a
+            href="https://discord.gg/9nqHUS55g"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-md bg-[#5865F2] px-4 py-2 text-white normal-case tracking-normal hover:opacity-90 transition"
+          >
+            <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current"><path d="M20.317 4.369A19.79 19.79 0 0 0 16.558 3c-.2.36-.43.85-.59 1.23a18.27 18.27 0 0 0-5.487 0A12.6 12.6 0 0 0 9.88 3a19.74 19.74 0 0 0-3.76 1.37C2.6 9.59 1.64 14.68 2.12 19.7a19.9 19.9 0 0 0 6.06 3.06c.49-.66.92-1.37 1.29-2.11a12.9 12.9 0 0 1-2.03-.97c.17-.13.34-.26.5-.39a14.21 14.21 0 0 0 12.13 0c.16.13.33.26.5.39a12.78 12.78 0 0 1-2.03.97c.37.74.8 1.45 1.29 2.11a19.9 19.9 0 0 0 6.06-3.06c.55-5.84-.94-10.88-3.57-15.33ZM9.68 16.5c-1.18 0-2.15-1.08-2.15-2.4 0-1.32.95-2.4 2.15-2.4 1.2 0 2.17 1.08 2.15 2.4 0 1.32-.95 2.4-2.15 2.4Zm4.64 0c-1.18 0-2.15-1.08-2.15-2.4 0-1.32.95-2.4 2.15-2.4 1.2 0 2.17 1.08 2.15 2.4 0 1.32-.95 2.4-2.15 2.4Z"/></svg>
+            Discord
+          </a>
         </nav>
       </div>
     </header>
