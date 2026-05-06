@@ -49,20 +49,45 @@ function LoginPage() {
     setPassword("");
   };
 
+  const handleDownload = async () => {
+    try {
+      const res = await fetch("/uploads");
+      const files: string[] = await res.json();
+
+      if (files.length === 1) {
+        const fileUrl = `/uploads/${files[0]}`;
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = files[0];
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        alert("No file available or multiple files found in /uploads.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error fetching files.");
+    }
+  };
+
   if (authed) {
     return (
       <Section eyebrow="Members" title="Buyer Area" subtitle="You're logged in. Download your build below.">
-        <div className="mx-auto max-w-xl rounded-2xl border border-border bg-card/60 p-8 text-center backdrop-blur" style={{ boxShadow: "var(--shadow-elegant)" }}>
+        <div
+          className="mx-auto max-w-xl rounded-2xl border border-border bg-card/60 p-8 text-center backdrop-blur"
+          style={{ boxShadow: "var(--shadow-elegant)" }}
+        >
           <Download className="mx-auto h-10 w-10 text-primary" />
           <h3 className="mt-3 font-display text-2xl font-bold uppercase tracking-widest text-primary">Sevware Client</h3>
           <p className="mt-2 text-sm text-muted-foreground">Latest build for Minecraft 1.21 (Fabric)</p>
-          <a
-            href="#"
+          <button
+            onClick={handleDownload}
             className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-display font-bold uppercase tracking-widest text-primary-foreground hover:scale-105 transition"
             style={{ boxShadow: "var(--shadow-glow)" }}
           >
             <Download className="h-4 w-4" /> Download JAR
-          </a>
+          </button>
           <button
             onClick={logout}
             className="mt-6 inline-flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground hover:text-primary transition mx-auto"
@@ -76,7 +101,11 @@ function LoginPage() {
 
   return (
     <Section eyebrow="Members" title="Buyer Login" subtitle="Sign in to access your Sevware Client download.">
-      <form onSubmit={onSubmit} className="mx-auto max-w-md space-y-5 rounded-2xl border border-border bg-card/60 p-8 backdrop-blur" style={{ boxShadow: "var(--shadow-elegant)" }}>
+      <form
+        onSubmit={onSubmit}
+        className="mx-auto max-w-md space-y-5 rounded-2xl border border-border bg-card/60 p-8 backdrop-blur"
+        style={{ boxShadow: "var(--shadow-elegant)" }}
+      >
         <div className="flex justify-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 border border-primary/40">
             <Lock className="h-6 w-6 text-primary" />
