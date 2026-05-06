@@ -31,11 +31,11 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Sevware — The Ultimate PvP Client" },
+      { name: "description", content: "Sevware Client: dominate PvP with crystal, combat, render and donut modules. Free download for Minecraft 1.21." },
+      { name: "author", content: "Sevware" },
+      { property: "og:title", content: "Sevware — The Ultimate PvP Client" },
+      { property: "og:description", content: "Dominate PvP with crystal, combat, render and donut modules. Free download for Minecraft 1.21." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -67,5 +67,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <div className="relative min-h-screen overflow-x-hidden">
+      <Starfield />
+      <Header />
+      <main className="relative z-10 pt-20">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
 }
