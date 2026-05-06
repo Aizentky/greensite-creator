@@ -96,7 +96,7 @@ function InstallationPage() {
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary font-display font-black text-primary-foreground">{s.n}</div>
             <div>
               <h3 className="font-display text-lg font-bold uppercase tracking-widest text-primary">{s.title}</h3>
-              <p className="mt-1 text-muted-foreground">{s.body}</p>
+              <div className="mt-1 text-muted-foreground">{s.body}</div>
             </div>
           </div>
         ))}
