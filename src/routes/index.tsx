@@ -30,17 +30,17 @@ function Index() {
 
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
         <Link
-          to="/download"
+          to="/login"
           className="group inline-flex items-center gap-3 rounded-lg bg-primary px-8 py-4 font-display font-bold uppercase tracking-widest text-primary-foreground transition hover:scale-105"
           style={{ boxShadow: "var(--shadow-glow)" }}
         >
           <Download className="h-5 w-5" /> Download
         </Link>
         <a
-          href="https://discord.gg/"
+          href="https://discord.gg/9nqHUS55g"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-3 rounded-lg border-2 border-primary/60 bg-transparent px-8 py-4 font-display font-bold uppercase tracking-widest text-primary transition hover:bg-primary/10"
+          className="inline-flex items-center gap-3 rounded-lg bg-[#5865F2] px-8 py-4 font-display font-bold uppercase tracking-widest text-white transition hover:scale-105"
         >
           <MessageCircle className="h-5 w-5" /> Discord
         </a>
