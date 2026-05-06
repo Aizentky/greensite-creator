@@ -11,13 +11,79 @@ export const Route = createFileRoute("/installation")({
   component: InstallationPage,
 });
 
-const steps = [
-  { n: 1, title: "Download the JAR", body: "Head to the Login page, sign in, and download the latest Sevware Client JAR file." },
-  { n: 2, title: "Open your launcher", body: "Use Feather, Prism, MultiMC or the official Minecraft launcher with Fabric 1.21 installed." },
-  { n: 3, title: "Place the mod", body: "Drop the .jar into your .minecraft/mods folder (or the equivalent for your launcher)." },
-  { n: 4, title: "Install Fabric API", body: "Make sure you also have the Fabric API jar in the same mods folder." },
-  { n: 5, title: "Launch Minecraft", body: "Start the 1.21 Fabric profile. Open the in-game ClickGUI with the RIGHT SHIFT key." },
-  { n: 6, title: "Need help?", body: "Join our Discord and ask in #support — we'll get you set up." },
+type Step = {
+  n: number;
+  title: string;
+  body: React.ReactNode;
+};
+
+const steps: Step[] = [
+  {
+    n: 1,
+    title: "Install Fabric Loader",
+    body: (
+      <p>
+        Download and run the{" "}
+        <a href="https://fabricmc.net/use/installer/" target="_blank" rel="noreferrer" className="text-primary underline-offset-4 hover:underline">
+          Fabric Installer
+        </a>
+        . Select Minecraft version <span className="text-primary font-semibold">1.21</span> and click Install.
+      </p>
+    ),
+  },
+  {
+    n: 2,
+    title: "Download Fabric API",
+    body: (
+      <p>
+        Get{" "}
+        <a href="https://modrinth.com/mod/fabric-api" target="_blank" rel="noreferrer" className="text-primary underline-offset-4 hover:underline">
+          Fabric API
+        </a>{" "}
+        for version 1.21 and place the <code className="rounded bg-muted px-1.5 py-0.5 text-xs">.jar</code> file in your mods folder.
+      </p>
+    ),
+  },
+  {
+    n: 3,
+    title: "Download Sevware Client",
+    body: <p>Head to the Login page and sign in to get the latest Sevware Client <code className="rounded bg-muted px-1.5 py-0.5 text-xs">.jar</code> file.</p>,
+  },
+  {
+    n: 4,
+    title: "Install Sevware Client",
+    body: (
+      <div className="space-y-3">
+        <p>
+          Move the <code className="rounded bg-muted px-1.5 py-0.5 text-xs">Sevware-Client.jar</code> file into your Minecraft mods folder:
+        </p>
+        <ul className="space-y-2 text-sm">
+          <li className="rounded-lg border border-border bg-background/40 p-3">
+            <span className="font-display uppercase tracking-widest text-primary">Windows:</span>{" "}
+            <code className="text-foreground">%appdata%\.minecraft\mods</code>
+          </li>
+          <li className="rounded-lg border border-border bg-background/40 p-3">
+            <span className="font-display uppercase tracking-widest text-primary">macOS:</span>{" "}
+            <code className="text-foreground">~/Library/Application Support/minecraft/mods</code>
+          </li>
+          <li className="rounded-lg border border-border bg-background/40 p-3">
+            <span className="font-display uppercase tracking-widest text-primary">Linux:</span>{" "}
+            <code className="text-foreground">~/.minecraft/mods</code>
+          </li>
+        </ul>
+      </div>
+    ),
+  },
+  {
+    n: 5,
+    title: "Launch Minecraft",
+    body: (
+      <p>
+        Open your Launcher, select the <span className="text-primary font-semibold">Fabric 1.21</span> profile and click Play. Press{" "}
+        <kbd className="rounded border border-border bg-muted px-2 py-0.5 text-xs">Right Shift</kbd> in-game to open the Sevware menu!
+      </p>
+    ),
+  },
 ];
 
 function InstallationPage() {
