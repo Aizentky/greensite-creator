@@ -50,25 +50,13 @@ function LoginPage() {
   };
 
   const handleDownload = async () => {
-    try {
-      const res = await fetch("/uploads");
-      const files: string[] = await res.json();
-
-      if (files.length === 1) {
-        const fileUrl = `/uploads/${files[0]}`;
-        const link = document.createElement("a");
-        link.href = fileUrl;
-        link.download = files[0];
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        alert("No file available or multiple files found in /uploads.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error fetching files.");
-    }
+    const fileName = "SevwareClient-1.21.jar";
+    const link = document.createElement("a");
+    link.href = `/downloads/${fileName}`;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (authed) {
