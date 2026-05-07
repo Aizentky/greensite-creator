@@ -37,7 +37,7 @@ function Index() {
           <Download className="h-5 w-5" /> Download
         </Link>
         <a
-          href="https://discord.gg/9nqHUS55g"
+          href="https://discord.gg/fuGbcA9U5"
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-3 rounded-lg bg-[#5865F2] px-8 py-4 font-display font-bold uppercase tracking-widest text-white transition hover:scale-105"
