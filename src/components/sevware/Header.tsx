@@ -26,7 +26,7 @@ export function Header() {
             </Link>
           ))}
           <a
-            href="https://discord.gg/9nqHUS55g"
+            href="https://discord.gg/fuGbcA9U5"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 rounded-md bg-[#5865F2] px-4 py-2 text-white normal-case tracking-normal hover:opacity-90 transition"
