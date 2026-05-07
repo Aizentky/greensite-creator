@@ -33,8 +33,21 @@ function LoginPage() {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (username === USERNAME && password === PASSWORD) {
+    let ok = username === USERNAME && password === PASSWORD;
+    if (!ok) {
+      try {
+        const list = JSON.parse(localStorage.getItem("sevware_admin_accounts") || "[]");
+        ok = list.some((a: { username: string; password: string }) => a.username === username && a.password === password);
+      } catch {}
+    }
+    if (ok) {
       localStorage.setItem(STORAGE_KEY, "1");
+      localStorage.setItem("sevware_current_user", username);
+      try {
+        const log = JSON.parse(localStorage.getItem("sevware_activity") || "[]");
+        log.push({ timestamp: new Date().toISOString(), user: username, action: "login" });
+        localStorage.setItem("sevware_activity", JSON.stringify(log));
+      } catch {}
       setAuthed(true);
       setError("");
     } else {
@@ -53,9 +66,10 @@ function LoginPage() {
     const fileName = "SevwareClient-1.21.jar";
     try {
       const log = JSON.parse(localStorage.getItem("sevware_activity") || "[]");
+      const currentUser = localStorage.getItem("sevware_current_user") || USERNAME;
       log.push({
         timestamp: new Date().toISOString(),
-        user: USERNAME,
+        user: currentUser,
         action: "download",
         file: fileName,
       });
