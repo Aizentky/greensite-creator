@@ -4,6 +4,7 @@ import { Section } from "@/components/sevware/Section";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Shield, LogOut, Trash2, UserPlus, Download, Users, Activity } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -46,10 +47,18 @@ function AdminPage() {
 
   const refresh = () => {
     try {
-      setAccounts(JSON.parse(localStorage.getItem(ADMIN_ACCOUNTS) || "[]"));
       setActivity(JSON.parse(localStorage.getItem(ACTIVITY_KEY) || "[]"));
       setDownloadCount(parseInt(localStorage.getItem(DOWNLOAD_COUNT) || "0", 10));
     } catch {}
+    void (async () => {
+      const { data } = await supabase
+        .from("buyer_accounts")
+        .select("username,password,created_at")
+        .order("created_at", { ascending: false });
+      if (data) {
+        setAccounts(data.map((a) => ({ username: a.username, password: a.password, createdAt: a.created_at })));
+      }
+    })();
   };
 
   useEffect(() => {
@@ -89,26 +98,28 @@ function AdminPage() {
   const createAccount = (e: FormEvent) => {
     e.preventDefault();
     if (!newUser || !newPass) return;
-    const list: Account[] = JSON.parse(localStorage.getItem(ADMIN_ACCOUNTS) || "[]");
-    if (list.some((a) => a.username === newUser)) {
-      setError("Username already exists.");
-      return;
-    }
-    list.push({ username: newUser, password: newPass, createdAt: new Date().toISOString() });
-    localStorage.setItem(ADMIN_ACCOUNTS, JSON.stringify(list));
-    logAdmin("create_account", newUser);
-    setNewUser("");
-    setNewPass("");
-    setError("");
-    refresh();
+    void (async () => {
+      const { error: e2 } = await supabase
+        .from("buyer_accounts")
+        .insert({ username: newUser, password: newPass });
+      if (e2) {
+        setError(e2.message.includes("duplicate") ? "Username already exists." : e2.message);
+        return;
+      }
+      logAdmin("create_account", newUser);
+      setNewUser("");
+      setNewPass("");
+      setError("");
+      refresh();
+    })();
   };
 
   const deleteAccount = (username: string) => {
-    const list: Account[] = JSON.parse(localStorage.getItem(ADMIN_ACCOUNTS) || "[]");
-    const next = list.filter((a) => a.username !== username);
-    localStorage.setItem(ADMIN_ACCOUNTS, JSON.stringify(next));
-    logAdmin("delete_account", username);
-    refresh();
+    void (async () => {
+      await supabase.from("buyer_accounts").delete().eq("username", username);
+      logAdmin("delete_account", username);
+      refresh();
+    })();
   };
 
   const clearActivity = () => {
