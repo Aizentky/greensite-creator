@@ -37,23 +37,29 @@ export type Database = {
       }
       login_events: {
         Row: {
+          country: string | null
           created_at: string
           id: string
           ip: string
+          region: string | null
           user_agent: string | null
           username: string
         }
         Insert: {
+          country?: string | null
           created_at?: string
           id?: string
           ip: string
+          region?: string | null
           user_agent?: string | null
           username: string
         }
         Update: {
+          country?: string | null
           created_at?: string
           id?: string
           ip?: string
+          region?: string | null
           user_agent?: string | null
           username?: string
         }
