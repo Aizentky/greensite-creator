@@ -33,14 +33,26 @@ function LoginPage() {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    let ok = username === USERNAME && password === PASSWORD;
-    if (!ok) {
-      try {
-        const list = JSON.parse(localStorage.getItem("sevware_admin_accounts") || "[]");
-        ok = list.some((a: { username: string; password: string }) => a.username === username && a.password === password);
-      } catch {}
-    }
-    if (ok) {
+    void (async () => {
+      let ok = username === USERNAME && password === PASSWORD;
+      if (!ok) {
+        try {
+          const list = JSON.parse(localStorage.getItem("sevware_admin_accounts") || "[]");
+          ok = list.some((a: { username: string; password: string }) => a.username === username && a.password === password);
+        } catch {}
+      }
+      if (!ok) {
+        try {
+          const { data } = await supabase
+            .from("buyer_accounts")
+            .select("username")
+            .eq("username", username)
+            .eq("password", password)
+            .maybeSingle();
+          ok = !!data;
+        } catch {}
+      }
+      if (ok) {
       localStorage.setItem(STORAGE_KEY, "1");
       localStorage.setItem("sevware_current_user", username);
       try {
@@ -50,9 +62,10 @@ function LoginPage() {
       } catch {}
       setAuthed(true);
       setError("");
-    } else {
-      setError("Invalid username or password.");
-    }
+      } else {
+        setError("Invalid username or password.");
+      }
+    })();
   };
 
   const logout = () => {
