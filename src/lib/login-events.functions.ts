@@ -18,14 +18,34 @@ export const recordLoginEvent = createServerFn({ method: "POST" })
       "unknown";
     const userAgent = getRequestHeader("user-agent") || null;
 
+    let country: string | null = getRequestHeader("cf-ipcountry") || null;
+    let region: string | null = getRequestHeader("cf-region") || null;
+
+    if ((!country || !region) && ip && ip !== "unknown") {
+      try {
+        const res = await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`, {
+          headers: { "User-Agent": "sevware-login-tracker" },
+        });
+        if (res.ok) {
+          const j: any = await res.json();
+          country = country || j.country_name || j.country || null;
+          region = region || j.region || j.city || null;
+        }
+      } catch (e) {
+        console.error("ip geo lookup failed:", e);
+      }
+    }
+
     const { error } = await supabaseAdmin.from("login_events").insert({
       username: data.username,
       ip,
       user_agent: userAgent,
+      country,
+      region,
     });
     if (error) {
       console.error("recordLoginEvent insert failed:", error);
-      return { ok: false, ip };
+      return { ok: false, ip, country, region };
     }
-    return { ok: true, ip };
+    return { ok: true, ip, country, region };
   });
