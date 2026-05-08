@@ -3,7 +3,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Section } from "@/components/sevware/Section";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, LogOut, Trash2, UserPlus, Download, Users, Activity } from "lucide-react";
+import { Shield, LogOut, Trash2, UserPlus, Download, Users, Activity, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
@@ -24,6 +24,7 @@ const DOWNLOAD_COUNT = "sevware_download_count";
 
 type Account = { username: string; password: string; createdAt: string };
 type ActivityEntry = { timestamp: string; user: string; action: string; file?: string; detail?: string };
+type LoginEvent = { username: string; ip: string; user_agent: string | null; created_at: string };
 
 function logAdmin(action: string, detail?: string) {
   try {
@@ -41,6 +42,7 @@ function AdminPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [downloadCount, setDownloadCount] = useState(0);
+  const [logins, setLogins] = useState<LoginEvent[]>([]);
 
   const [newUser, setNewUser] = useState("");
   const [newPass, setNewPass] = useState("");
@@ -58,6 +60,12 @@ function AdminPage() {
       if (data) {
         setAccounts(data.map((a) => ({ username: a.username, password: a.password, createdAt: a.created_at })));
       }
+      const { data: ev } = await supabase
+        .from("login_events")
+        .select("username,ip,user_agent,created_at")
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (ev) setLogins(ev as LoginEvent[]);
     })();
   };
 
@@ -164,7 +172,7 @@ function AdminPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard icon={<Download className="h-5 w-5" />} label="Total Downloads" value={downloadCount} />
           <StatCard icon={<Users className="h-5 w-5" />} label="Accounts" value={accounts.length} />
-          <StatCard icon={<Activity className="h-5 w-5" />} label="Log Entries" value={activity.length} />
+          <StatCard icon={<Activity className="h-5 w-5" />} label="Logins Tracked" value={logins.length} />
         </div>
 
         <div className="rounded-2xl border border-border bg-card/60 p-6 backdrop-blur" style={{ boxShadow: "var(--shadow-elegant)" }}>
@@ -191,6 +199,23 @@ function AdminPage() {
                 <button onClick={() => deleteAccount(a.username)} className="text-destructive hover:opacity-80">
                   <Trash2 className="h-4 w-4" />
                 </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-card/60 p-6 backdrop-blur" style={{ boxShadow: "var(--shadow-elegant)" }}>
+          <h3 className="font-display text-lg font-bold uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+            <Globe className="h-5 w-5" /> Client Logins (server-tracked IP)
+          </h3>
+          <div className="max-h-80 overflow-auto rounded-lg border border-border bg-black/40 p-3 font-mono text-xs">
+            {logins.length === 0 && <p className="text-muted-foreground">No logins recorded.</p>}
+            {logins.map((e, i) => (
+              <div key={i} className="border-b border-border/40 py-1">
+                <span className="text-muted-foreground">{new Date(e.created_at).toLocaleString()}</span>{" "}
+                <span className="text-primary">[{e.username}]</span>{" "}
+                <span className="text-foreground">client login from {e.ip}</span>
+                {e.user_agent && <span className="text-muted-foreground"> · {e.user_agent}</span>}
               </div>
             ))}
           </div>
