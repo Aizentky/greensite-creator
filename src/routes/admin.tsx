@@ -3,7 +3,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Section } from "@/components/sevware/Section";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, LogOut, Trash2, UserPlus, Download, Users, Activity, Globe } from "lucide-react";
+import { Shield, LogOut, Trash2, UserPlus, Download, Users, Activity, Globe, MapPin, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
@@ -24,7 +24,14 @@ const DOWNLOAD_COUNT = "sevware_download_count";
 
 type Account = { username: string; password: string; createdAt: string };
 type ActivityEntry = { timestamp: string; user: string; action: string; file?: string; detail?: string };
-type LoginEvent = { username: string; ip: string; user_agent: string | null; created_at: string };
+type LoginEvent = {
+  username: string;
+  ip: string;
+  user_agent: string | null;
+  created_at: string;
+  country: string | null;
+  region: string | null;
+};
 
 function logAdmin(action: string, detail?: string) {
   try {
@@ -62,7 +69,7 @@ function AdminPage() {
       }
       const { data: ev } = await supabase
         .from("login_events")
-        .select("username,ip,user_agent,created_at")
+        .select("username,ip,user_agent,created_at,country,region")
         .order("created_at", { ascending: false })
         .limit(200);
       if (ev) setLogins(ev as LoginEvent[]);
