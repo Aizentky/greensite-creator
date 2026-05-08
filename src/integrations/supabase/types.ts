@@ -35,6 +35,30 @@ export type Database = {
         }
         Relationships: []
       }
+      login_events: {
+        Row: {
+          created_at: string
+          id: string
+          ip: string
+          user_agent: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip: string
+          user_agent?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip?: string
+          user_agent?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

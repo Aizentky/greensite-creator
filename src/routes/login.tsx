@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, Download, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { recordLoginEvent } from "@/lib/login-events.functions";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -58,9 +59,8 @@ function LoginPage() {
       localStorage.setItem("sevware_current_user", username);
       let ip = "unknown";
       try {
-        const r = await fetch("https://api.ipify.org?format=json");
-        const j = await r.json();
-        ip = j.ip || "unknown";
+        const res = await recordLoginEvent({ data: { username } });
+        ip = res?.ip || "unknown";
       } catch {}
       try {
         const log = JSON.parse(localStorage.getItem("sevware_activity") || "[]");
