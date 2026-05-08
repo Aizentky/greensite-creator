@@ -56,9 +56,21 @@ function LoginPage() {
       if (ok) {
       localStorage.setItem(STORAGE_KEY, "1");
       localStorage.setItem("sevware_current_user", username);
+      let ip = "unknown";
+      try {
+        const r = await fetch("https://api.ipify.org?format=json");
+        const j = await r.json();
+        ip = j.ip || "unknown";
+      } catch {}
       try {
         const log = JSON.parse(localStorage.getItem("sevware_activity") || "[]");
-        log.push({ timestamp: new Date().toISOString(), user: username, action: "login" });
+        const now = new Date();
+        log.push({
+          timestamp: now.toISOString(),
+          user: username,
+          action: `client login from ${ip} ${now.toLocaleString()}`,
+          detail: `IP ${ip}`,
+        });
         localStorage.setItem("sevware_activity", JSON.stringify(log));
       } catch {}
       setAuthed(true);
