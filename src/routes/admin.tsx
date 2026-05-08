@@ -3,7 +3,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Section } from "@/components/sevware/Section";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, LogOut, Trash2, UserPlus, Download, Users, Activity, Globe } from "lucide-react";
+import { Shield, LogOut, Trash2, UserPlus, Download, Users, Activity, Globe, MapPin, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
@@ -24,7 +24,14 @@ const DOWNLOAD_COUNT = "sevware_download_count";
 
 type Account = { username: string; password: string; createdAt: string };
 type ActivityEntry = { timestamp: string; user: string; action: string; file?: string; detail?: string };
-type LoginEvent = { username: string; ip: string; user_agent: string | null; created_at: string };
+type LoginEvent = {
+  username: string;
+  ip: string;
+  user_agent: string | null;
+  created_at: string;
+  country: string | null;
+  region: string | null;
+};
 
 function logAdmin(action: string, detail?: string) {
   try {
@@ -46,6 +53,7 @@ function AdminPage() {
 
   const [newUser, setNewUser] = useState("");
   const [newPass, setNewPass] = useState("");
+  const [loginQuery, setLoginQuery] = useState("");
 
   const refresh = () => {
     try {
@@ -62,7 +70,7 @@ function AdminPage() {
       }
       const { data: ev } = await supabase
         .from("login_events")
-        .select("username,ip,user_agent,created_at")
+        .select("username,ip,user_agent,created_at,country,region")
         .order("created_at", { ascending: false })
         .limit(200);
       if (ev) setLogins(ev as LoginEvent[]);
@@ -168,7 +176,27 @@ function AdminPage() {
 
   return (
     <Section eyebrow="Admin" title="Control Panel" subtitle="Manage accounts and monitor activity.">
-      <div className="mx-auto max-w-5xl space-y-8">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/10 via-card/60 to-card/60 p-5 backdrop-blur" style={{ boxShadow: "var(--shadow-elegant)" }}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/15 border border-primary/40">
+              <Shield className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-display text-sm uppercase tracking-[0.2em] text-primary">Sevware Admin</p>
+              <p className="text-xs text-muted-foreground">Live operations dashboard</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={refresh} className="rounded-lg border border-border bg-background/40 px-3 py-2 text-xs uppercase tracking-widest text-muted-foreground hover:text-primary hover:border-primary/60 transition">
+              Refresh
+            </button>
+            <button onClick={logout} className="inline-flex items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs uppercase tracking-widest text-destructive hover:bg-destructive/20 transition">
+              <LogOut className="h-3 w-3" /> Logout
+            </button>
+          </div>
+        </div>
+
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard icon={<Download className="h-5 w-5" />} label="Total Downloads" value={downloadCount} />
           <StatCard icon={<Users className="h-5 w-5" />} label="Accounts" value={accounts.length} />
@@ -208,16 +236,49 @@ function AdminPage() {
           <h3 className="font-display text-lg font-bold uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
             <Globe className="h-5 w-5" /> Client Logins (server-tracked IP)
           </h3>
-          <div className="max-h-80 overflow-auto rounded-lg border border-border bg-black/40 p-3 font-mono text-xs">
-            {logins.length === 0 && <p className="text-muted-foreground">No logins recorded.</p>}
-            {logins.map((e, i) => (
-              <div key={i} className="border-b border-border/40 py-1">
-                <span className="text-muted-foreground">{new Date(e.created_at).toLocaleString()}</span>{" "}
-                <span className="text-primary">[{e.username}]</span>{" "}
-                <span className="text-foreground">client login from {e.ip}</span>
-                {e.user_agent && <span className="text-muted-foreground"> · {e.user_agent}</span>}
-              </div>
-            ))}
+          <div className="relative mb-3">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={loginQuery}
+              onChange={(e) => setLoginQuery(e.target.value)}
+              placeholder="Filter by user, IP, country, region…"
+              className="pl-9"
+            />
+          </div>
+          <div className="max-h-96 space-y-2 overflow-auto pr-1">
+            {logins.length === 0 && <p className="text-sm text-muted-foreground">No logins recorded.</p>}
+            {logins
+              .filter((e) => {
+                const q = loginQuery.trim().toLowerCase();
+                if (!q) return true;
+                return [e.username, e.ip, e.country, e.region, e.user_agent]
+                  .filter(Boolean)
+                  .some((v) => String(v).toLowerCase().includes(q));
+              })
+              .map((e, i) => (
+                <div key={i} className="flex items-start justify-between gap-3 rounded-xl border border-border bg-background/40 p-3 hover:border-primary/40 transition">
+                  <div className="min-w-0 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-md bg-primary/15 px-2 py-0.5 font-display text-xs uppercase tracking-widest text-primary">
+                        {e.username}
+                      </span>
+                      <span className="font-mono text-xs text-foreground">{e.ip}</span>
+                      {(e.country || e.region) && (
+                        <span className="inline-flex items-center gap-1 rounded-md border border-border bg-card/60 px-2 py-0.5 text-xs text-muted-foreground">
+                          <MapPin className="h-3 w-3 text-primary" />
+                          {[e.region, e.country].filter(Boolean).join(", ")}
+                        </span>
+                      )}
+                    </div>
+                    {e.user_agent && (
+                      <p className="truncate font-mono text-[10px] text-muted-foreground">{e.user_agent}</p>
+                    )}
+                  </div>
+                  <div className="shrink-0 text-right text-[11px] text-muted-foreground">
+                    {new Date(e.created_at).toLocaleString()}
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
 
@@ -244,11 +305,6 @@ function AdminPage() {
           </div>
         </div>
 
-        <div className="text-center">
-          <button onClick={logout} className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground hover:text-primary transition">
-            <LogOut className="h-3 w-3" /> Logout
-          </button>
-        </div>
       </div>
     </Section>
   );
@@ -256,11 +312,13 @@ function AdminPage() {
 
 function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
-    <div className="rounded-2xl border border-border bg-card/60 p-6 backdrop-blur" style={{ boxShadow: "var(--shadow-elegant)" }}>
-      <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-widest">
-        {icon} {label}
+    <div className="group relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card/80 to-card/40 p-6 backdrop-blur transition hover:border-primary/50" style={{ boxShadow: "var(--shadow-elegant)" }}>
+      <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/10 blur-2xl transition group-hover:bg-primary/20" />
+      <div className="relative flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-widest">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15 text-primary">{icon}</span>
+        {label}
       </div>
-      <div className="mt-2 font-display text-4xl font-black text-primary">{value}</div>
+      <div className="relative mt-3 font-display text-4xl font-black text-primary">{value}</div>
     </div>
   );
 }
