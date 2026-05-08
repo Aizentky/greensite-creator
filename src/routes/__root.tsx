@@ -41,8 +41,8 @@ export const Route = createRootRoute({
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Sevware — The Ultimate GHOST  Client" },
       { name: "twitter:description", content: "Sevware Client: dominate PvP with crystal, combat, render and donut modules. 5$/250php download for Minecraft 1.21.1 Client owner: 777zent" },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a5f4b2a7-63b7-41dc-97a5-668ab6bdfe6f/id-preview-5b3e4bb7--31225575-e1f9-41dd-a681-1116120d6a4a.lovable.app-1778039922506.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a5f4b2a7-63b7-41dc-97a5-668ab6bdfe6f/id-preview-5b3e4bb7--31225575-e1f9-41dd-a681-1116120d6a4a.lovable.app-1778039922506.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/gFxFZ8u9NvXgon0M5OrbDCmpRdA3/social-images/social-1778228956818-Screenshot_2026-05-08_162847.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/gFxFZ8u9NvXgon0M5OrbDCmpRdA3/social-images/social-1778228956818-Screenshot_2026-05-08_162847.webp" },
     ],
     links: [
       {
