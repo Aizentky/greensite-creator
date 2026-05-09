@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 export function Section({
   eyebrow,
@@ -28,13 +28,35 @@ export function Section({
 }
 
 export function FeatureCard({ icon, title, items }: { icon: string; title: string; items: string[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [wiggle, setWiggle] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setWiggle(true);
+            window.setTimeout(() => setWiggle(false), 700);
+          }
+        });
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <div
-      className="group rounded-2xl border border-border bg-card/60 p-6 backdrop-blur transition hover:border-primary/60 hover:-translate-y-1"
+      ref={ref}
+      className={`group rounded-2xl border border-border bg-card/60 p-6 backdrop-blur transition hover:border-primary/60 hover:-translate-y-1 ${wiggle ? "animate-wiggle" : ""}`}
       style={{ boxShadow: "var(--shadow-elegant)" }}
     >
       <div className="mb-3 text-3xl">{icon}</div>
-      <h3 className="font-display text-xl font-bold uppercase tracking-widest text-primary">{title}</h3>
+      <h3 className="font-display text-2xl font-black uppercase tracking-widest text-primary">{title}</h3>
       <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
         {items.map((it) => (
           <li key={it} className="flex items-center gap-2">
