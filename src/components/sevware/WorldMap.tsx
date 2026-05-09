@@ -53,18 +53,18 @@ export function WorldMap({ counts }: { counts: Record<string, number> }) {
               const c = lookup[name.toLowerCase()] || 0;
               const intensity = c / max;
               const fill = c
-                ? `color-mix(in oklab, hsl(var(--primary, 220 90% 60%)) ${Math.round(20 + intensity * 70)}%, transparent)`
-                : "hsl(var(--muted, 220 14% 20%) / 0.35)";
+                ? `color-mix(in oklab, var(--primary) ${Math.round(20 + intensity * 70)}%, transparent)`
+                : "color-mix(in oklab, var(--muted) 40%, transparent)";
               return (
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
                   fill={fill}
-                  stroke="hsl(var(--border, 220 10% 30%))"
+                  stroke="var(--border)"
                   strokeWidth={0.4}
                   style={{
                     default: { outline: "none" },
-                    hover: { outline: "none", fill: "hsl(var(--primary, 220 90% 60%) / 0.9)" },
+                    hover: { outline: "none", fill: "var(--primary)" },
                     pressed: { outline: "none" },
                   }}
                 >
