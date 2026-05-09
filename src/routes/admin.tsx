@@ -3,8 +3,9 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Section } from "@/components/sevware/Section";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, LogOut, Trash2, UserPlus, Download, Users, Activity, Globe, MapPin, Search } from "lucide-react";
+import { Shield, LogOut, Trash2, UserPlus, Download, Users, Activity, Globe, MapPin, Search, Map as MapIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { WorldMap, normalizeCountry } from "@/components/sevware/WorldMap";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -54,6 +55,20 @@ function AdminPage() {
   const [newUser, setNewUser] = useState("");
   const [newPass, setNewPass] = useState("");
   const [loginQuery, setLoginQuery] = useState("");
+
+  const countryCounts = (() => {
+    const m: Record<string, number> = {};
+    for (const e of logins) {
+      const name = normalizeCountry(e.country);
+      if (!name) continue;
+      m[name] = (m[name] || 0) + 1;
+    }
+    return m;
+  })();
+  const topCountries = Object.entries(countryCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+  const totalLocated = topCountries.reduce((s, [, n]) => s + n, 0) || 1;
 
   const refresh = () => {
     try {
@@ -236,6 +251,44 @@ function AdminPage() {
           <h3 className="font-display text-lg font-bold uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
             <Globe className="h-5 w-5" /> Client Logins (server-tracked IP)
           </h3>
+          <div className="mb-5 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+                <MapIcon className="h-4 w-4 text-primary" /> Geographic distribution
+              </div>
+              <WorldMap counts={countryCounts} />
+            </div>
+            <div className="space-y-2">
+              <div className="text-xs uppercase tracking-widest text-muted-foreground">Top countries</div>
+              <div className="space-y-2 rounded-xl border border-border bg-background/40 p-4">
+                {topCountries.length === 0 && (
+                  <p className="text-sm text-muted-foreground">No location data yet.</p>
+                )}
+                {topCountries.map(([name, count], i) => {
+                  const pct = Math.round((count / totalLocated) * 100);
+                  return (
+                    <div key={name} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="flex items-center gap-2">
+                          <span className="font-display text-[10px] text-muted-foreground">#{i + 1}</span>
+                          <span className="font-medium text-foreground">{name}</span>
+                        </span>
+                        <span className="font-mono text-muted-foreground">
+                          {count} <span className="text-[10px]">({pct}%)</span>
+                        </span>
+                      </div>
+                      <div className="h-1.5 overflow-hidden rounded-full bg-card">
+                        <div
+                          className="h-full rounded-full bg-primary transition-all"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
           <div className="relative mb-3">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
