@@ -28,8 +28,17 @@ function LoginPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem(STORAGE_KEY) === "1") {
-      setAuthed(true);
+    if (typeof window !== "undefined") {
+      const flag = localStorage.getItem(STORAGE_KEY);
+      const user = localStorage.getItem("sevware_current_user");
+      if (flag === "1" && user) {
+        setAuthed(true);
+      } else {
+        // Clean up any stale/partial auth state
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem("sevware_current_user");
+        setAuthed(false);
+      }
     }
   }, []);
 
@@ -89,10 +98,19 @@ function LoginPage() {
   };
 
   const handleDownload = async () => {
+    // Hard guard: never allow download unless a real session exists
+    const flag = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+    const currentUser = typeof window !== "undefined" ? localStorage.getItem("sevware_current_user") : null;
+    if (flag !== "1" || !currentUser) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem("sevware_current_user");
+      setAuthed(false);
+      setError("Please sign in again to download.");
+      return;
+    }
     const fileName = "SevwareClient-1.21.jar";
     try {
       const log = JSON.parse(localStorage.getItem("sevware_activity") || "[]");
-      const currentUser = localStorage.getItem("sevware_current_user") || USERNAME;
       log.push({
         timestamp: new Date().toISOString(),
         user: currentUser,
